@@ -4,12 +4,13 @@
 // To use Phoenix channels, the first step is to import Socket
 // and connect at the socket path in "lib/web/endpoint.ex":
 import {
-  Socket
+  Socket,
+  Presence
 } from "phoenix"
-
+let token = $("meta[name=channel_token]").attr("content");
 let socket = new Socket("/socket", {
   params: {
-    token: window.userToken
+    token: token
   }
 })
 
@@ -58,9 +59,42 @@ let socket = new Socket("/socket", {
 // from connect if you don't care about authentication.
 
 socket.connect()
+// Presence
+let presences = {};
+
+function renderOnlinePlayers(presences) {
+  let response = "";
+
+  Presence.list(presences, (id, {
+    metas: [first, ...rest]
+  }) => {
+    let count = rest.length + 1;
+    response += `
+      <br><strong>${first.name}</strong> (count: ${count})
+      <br>
+
+
+      `;
+  });
+
+  document.querySelector("#UserList").innerHTML = response;
+}
 
 // Now that you are connected, you can join channels with a topic:
 let channel = socket.channel("room:lobby", {})
+
+channel.on("presence_state", state => {
+  presences = Presence.syncState(presences, state);
+  renderOnlinePlayers(presences);
+});
+
+channel.on("presence_diff", diff => {
+  presences = Presence.syncDiff(presences, diff);
+  renderOnlinePlayers(presences);
+});
+
+
+
 let chatInput = document.querySelector("#chat-input")
 let messagesContainer = document.querySelector("#messages")
 chatInput.addEventListener("keypress", event => {

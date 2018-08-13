@@ -3,10 +3,11 @@ defmodule EasyWeb.UserSocket do
 
   ## Channels
   channel("room:*", EasyWeb.RoomChannel)
-
   ## Transports
   transport(:websocket, Phoenix.Transports.WebSocket, timeout: 45_000)
   # transport :longpoll, Phoenix.Transports.LongPoll
+
+  @max_age 2 * 7 * 24 * 60 * 60
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After
@@ -19,8 +20,16 @@ defmodule EasyWeb.UserSocket do
   #
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
-  def connect(_params, socket) do
-    {:ok, socket}
+  def connect(%{"token" => token}, socket) do
+    case Phoenix.Token.verify(socket, "user auth", token, max_age: @max_age) do
+      {:ok, user_id} ->
+        {:ok, assign(socket, :current_user, user_id)}
+        # socket = assign(socket, :user, Repo.get!(User, user_id))
+        {:ok, socket}
+
+      {:error, _} ->
+        :error
+    end
   end
 
   # Socket id's are topics that allow you to identify all sockets for a given user:

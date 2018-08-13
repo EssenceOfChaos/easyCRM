@@ -20,7 +20,7 @@
                         'Elixir.EasyWeb.Helpers.SetUser',
                         'Elixir.EasyWeb.LayoutView',
                         'Elixir.EasyWeb.PageController',
-                        'Elixir.EasyWeb.PageView',
+                        'Elixir.EasyWeb.PageView','Elixir.EasyWeb.Presence',
                         'Elixir.EasyWeb.RoomChannel','Elixir.EasyWeb.Router',
                         'Elixir.EasyWeb.Router.Helpers',
                         'Elixir.EasyWeb.UserSocket']},

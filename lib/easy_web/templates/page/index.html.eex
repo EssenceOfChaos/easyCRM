@@ -6,7 +6,9 @@
 <div class="row marketing">
   <div class="col-lg-6">
     <h4>Resources</h4>
-<p>Other things and text here</p>
+<ul id="UserList" class="list-unstyled">
+        <li class="text-center"><img src="images/hourglass_loader.svg" height="30px" width="30px" alt="loading icon"></li>
+      </ul>
   </div>
 
   <div class="col-lg-6">

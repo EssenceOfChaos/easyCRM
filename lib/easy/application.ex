@@ -1,4 +1,7 @@
 defmodule Easy.Application do
+  @moduledoc """
+  Define the entry point of the application
+  """
   use Application
 
   # See https://hexdocs.pm/elixir/Application.html
@@ -12,6 +15,7 @@ defmodule Easy.Application do
       supervisor(Easy.Repo, []),
       # Start the endpoint when the application starts
       supervisor(EasyWeb.Endpoint, []),
+      supervisor(EasyWeb.Presence, [])
       # Start your own worker by calling: Easy.Worker.start_link(arg1, arg2, arg3)
       # worker(Easy.Worker, [arg1, arg2, arg3]),
     ]
