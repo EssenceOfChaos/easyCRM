@@ -1,0 +1,7 @@
+<div>
+  <%= if logged_in?(@conn) do %>
+    <a class="" href="/logout">Logout</a>
+    <% else %>
+      <a class="login" href="/auth/auth0">Login</a>
+      <% end %>
+</div>
