@@ -1,7 +1,7 @@
 <div>
   <%= if logged_in?(@conn) do %>
-    <a class="" href="/logout">Logout</a>
+     <span class="item"><%= link "Logout", to: "/logout", class: "ui primary button" %></span>
     <% else %>
-      <a class="login" href="/auth/auth0">Login</a>
+       <span class="item"><%= link "Login", to: "/auth/auth0", class: "ui primary button" %></span>
       <% end %>
 </div>

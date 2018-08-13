@@ -13,20 +13,21 @@ defmodule EasyWeb.Router do
     plug(:accepts, ["json"])
   end
 
-  scope "/", EasyWeb do
-    # Use the default browser stack
-    pipe_through(:browser)
-
-    get("/", PageController, :index)
-    resources("/employees", EmployeeController)
-  end
-
   ## AUTH ROUTES
   scope "/auth", EasyWeb do
     pipe_through(:browser)
     get("/:provider", AuthController, :request)
     get("/:provider/callback", AuthController, :callback)
     post("/:provider/callback", AuthController, :callback)
+  end
+
+  scope "/", EasyWeb do
+    # Use the default browser stack
+    pipe_through(:browser)
+
+    get("/", PageController, :index)
+    resources("/employees", EmployeeController)
+    get("/logout", AuthController, :logout)
   end
 
   # Other scopes may use custom stacks.

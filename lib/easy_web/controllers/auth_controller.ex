@@ -1,8 +1,10 @@
 defmodule EasyWeb.AuthController do
   use EasyWeb, :controller
+  alias EasyWeb.Router.Helpers
   plug(Ueberauth)
 
   alias Easy.Auth.UserFromAuth
+  alias Ueberauth.Strategy.Helpers
 
   def logout(conn, _params) do
     conn
