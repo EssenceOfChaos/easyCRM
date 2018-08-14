@@ -1,5 +1,6 @@
 defmodule EasyWeb.Router do
   use EasyWeb, :router
+  alias EasyWeb.Plugs.Auth
 
   pipeline :browser do
     plug(:accepts, ["html"])
@@ -7,6 +8,8 @@ defmodule EasyWeb.Router do
     plug(:fetch_flash)
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
+    plug(Auth)
+    plug(:put_user_token)
   end
 
   pipeline :api do
@@ -34,4 +37,12 @@ defmodule EasyWeb.Router do
   # scope "/api", EasyWeb do
   #   pipe_through :api
   # end
+  defp put_user_token(conn, _) do
+    if current_user = conn.assigns[:current_user] do
+      token = Phoenix.Token.sign(conn, "user socket", current_user.id)
+      assign(conn, :user_token, token)
+    else
+      conn
+    end
+  end
 end

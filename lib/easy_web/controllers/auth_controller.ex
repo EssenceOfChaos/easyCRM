@@ -1,11 +1,11 @@
 defmodule EasyWeb.AuthController do
   use EasyWeb, :controller
-  alias EasyWeb.Router.Helpers
+
   plug(Ueberauth)
 
   alias Easy.Auth.UserFromAuth
-  alias Ueberauth.Strategy.Helpers
 
+  @spec logout(Plug.Conn.t(), any()) :: Plug.Conn.t()
   def logout(conn, _params) do
     conn
     |> put_flash(:info, "You have been logged out!")
@@ -13,6 +13,7 @@ defmodule EasyWeb.AuthController do
     |> redirect(to: "/")
   end
 
+  @spec callback(Plug.Conn.t(), any()) :: Plug.Conn.t()
   def callback(%{assigns: %{ueberauth_failure: _fails}} = conn, _params) do
     conn
     |> put_flash(:error, "Failed to authenticate.")
@@ -23,6 +24,7 @@ defmodule EasyWeb.AuthController do
     case UserFromAuth.find_or_create(auth) do
       {:ok, user} ->
         conn
+        |> assign(:current_user, user)
         |> put_flash(:info, "Successfully authenticated as " <> user.name <> ".")
         |> put_session(:current_user, user)
         |> redirect(to: "/")

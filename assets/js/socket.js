@@ -6,13 +6,13 @@
 import {
   Socket,
   Presence
-} from "phoenix"
-let token = $("meta[name=channel_token]").attr("content");
-let socket = new Socket("/socket", {
+} from 'phoenix';
+// let token = $("meta[name=channel_token]").attr("content");
+let socket = new Socket('/socket', {
   params: {
-    token: token
-  }
-})
+    token: window.userToken,
+  },
+});
 
 // When you connect, you'll often need to authenticate the client.
 // For example, imagine you have an authentication plug, `MyAuth`,
@@ -28,14 +28,14 @@ let socket = new Socket("/socket", {
 //       plug :put_user_token
 //     end
 //
-//     defp put_user_token(conn, _) do
-//       if current_user = conn.assigns[:current_user] do
-//         token = Phoenix.Token.sign(conn, "user socket", current_user.id)
-//         assign(conn, :user_token, token)
-//       else
-//         conn
-//       end
-//     end
+// defp put_user_token(conn, _) do
+//   if current_user = conn.assigns[:current_user] do
+//     token = Phoenix.Token.sign(conn, "user socket", current_user.id)
+//     assign(conn, :user_token, token)
+//   else
+//     conn
+//   end
+// end
 //
 // Now you need to pass this token to JavaScript. You can do so
 // inside a script tag in "lib/web/templates/layout/app.html.eex":
@@ -58,65 +58,66 @@ let socket = new Socket("/socket", {
 // Finally, pass the token on connect as below. Or remove it
 // from connect if you don't care about authentication.
 
-socket.connect()
+socket.connect();
 // Presence
 let presences = {};
 
-function renderOnlinePlayers(presences) {
-  let response = "";
+function renderOnlineUsers(presences) {
+  let response = '';
 
   Presence.list(presences, (id, {
     metas: [first, ...rest]
   }) => {
     let count = rest.length + 1;
     response += `
-      <br><strong>${first.name}</strong> (count: ${count})
+      <br><strong>UserID:</strong> ${first.id}
+  
+      (count: ${count})
       <br>
 
 
       `;
   });
 
-  document.querySelector("#UserList").innerHTML = response;
+  document.querySelector('#UserList').innerHTML = response;
 }
 
 // Now that you are connected, you can join channels with a topic:
-let channel = socket.channel("room:lobby", {})
+let channel = socket.channel('room:lobby', {});
 
-channel.on("presence_state", state => {
+channel.on('presence_state', state => {
   presences = Presence.syncState(presences, state);
-  renderOnlinePlayers(presences);
+  renderOnlineUsers(presences);
 });
 
-channel.on("presence_diff", diff => {
+channel.on('presence_diff', diff => {
   presences = Presence.syncDiff(presences, diff);
-  renderOnlinePlayers(presences);
+  renderOnlineUsers(presences);
 });
 
-
-
-let chatInput = document.querySelector("#chat-input")
-let messagesContainer = document.querySelector("#messages")
-chatInput.addEventListener("keypress", event => {
+let chatInput = document.querySelector('#chat-input');
+let messagesContainer = document.querySelector('#messages');
+chatInput.addEventListener('keypress', event => {
   if (event.keyCode === 13) {
-    channel.push("new_msg", {
-      body: chatInput.value
-    })
-    chatInput.value = ""
+    channel.push('new_msg', {
+      body: chatInput.value,
+    });
+    chatInput.value = '';
   }
-})
-channel.on("new_msg", payload => {
-  let messageItem = document.createElement("li")
-  messageItem.innerText = `[${Date()}] ${payload.body}`
-  messagesContainer.appendChild(messageItem)
-})
+});
+channel.on('new_msg', payload => {
+  let messageItem = document.createElement('li');
+  messageItem.innerText = `[${Date()}] ${payload.body}`;
+  messagesContainer.appendChild(messageItem);
+});
 
-channel.join()
-  .receive("ok", resp => {
-    console.log("Joined successfully!", resp)
+channel
+  .join()
+  .receive('ok', resp => {
+    console.log('Joined successfully!', resp);
   })
-  .receive("error", resp => {
-    console.log("Sorry, unable to join", resp)
-  })
+  .receive('error', resp => {
+    console.log('Sorry, unable to join', resp);
+  });
 
-export default socket
+export default socket;

@@ -21,13 +21,12 @@ defmodule EasyWeb.UserSocket do
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
   def connect(%{"token" => token}, socket) do
-    case Phoenix.Token.verify(socket, "user auth", token, max_age: @max_age) do
+    # max_age: 1209600 is equivalent to two weeks in seconds
+    case Phoenix.Token.verify(socket, "user socket", token, max_age: @max_age) do
       {:ok, user_id} ->
-        {:ok, assign(socket, :current_user, user_id)}
-        # socket = assign(socket, :user, Repo.get!(User, user_id))
-        {:ok, socket}
+        {:ok, assign(socket, :current_user_id, user_id)}
 
-      {:error, _} ->
+      {:error, reason} ->
         :error
     end
   end
